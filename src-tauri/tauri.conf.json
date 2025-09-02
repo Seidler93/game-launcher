@@ -17,8 +17,18 @@
     "windows": [{ "title": "Game Launcher", "width": 1200, "height": 800 }],
     "allowlist": {
       "all": false,
-      "dialog": { "open": true },
-      "fs": { "readFile": true, "readDir": true },
+      "dialog": {
+        "open": true,
+        "message": true,   
+        "ask": true,       
+        "confirm": true    
+      },
+      "fs": {
+        "readDir": true,
+        "readFile": true,
+        "exists": true,
+        "scope": ["**"]
+      },
       "path": { "all": true },
       "os": { "all": true },
       "shell": { "open": true }

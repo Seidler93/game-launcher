@@ -6,6 +6,7 @@ import { getOSKey } from "../lib/os";
 import { findRomsInFolder, titleFromFilename } from "../lib/scan";
 import { launchRom, launchSteam } from "../lib/launch";
 import { open } from "@tauri-apps/api/dialog";
+import type { GameFolder } from "../types";
 
 const FILTERS: ("all" | Platform)[] = ["all", "steam", "ps2", "ps3", "gba", "custom"];
 
@@ -20,10 +21,22 @@ export default function App() {
     addRomGame,
     upsertEmulatorPath,
     addGameFolder,
+    removeGameFolder, 
+    pruneGamesByFolder
   } = useStore();
   const [osKey, setOsKey] = useState<"win" | "mac" | "linux">("win");
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | Platform>("all");
+
+  function handleDeleteFolder(f: GameFolder) {
+    if (!confirm(`Delete folder "${f.name}"?\n(This won't delete files on disk.)`)) return;
+    removeGameFolder(f.id);
+
+    // Optional cleanup: also remove games from that folder
+    if (confirm("Also remove games from this folder from the library?")) {
+      pruneGamesByFolder(f.path);
+    }
+  }
 
   useEffect(() => {
   (async () => {
@@ -68,7 +81,7 @@ export default function App() {
     const exePath = await open({
       multiple: false,
       directory: false,
-      filters: [{ name: "Executable", extensions: osKey === "win" ? ["exe"] : ["app", ""] }],
+      // filters: [{ name: "Executable", extensions: osKey === "win" ? ["exe"] : ["app", ""] }],
     });
     if (!exePath || typeof exePath !== "string") return;
     const argsStr = prompt("Default args (use ${ROM} for file placeholder)", "${ROM}") || "${ROM}";
@@ -105,9 +118,10 @@ export default function App() {
   }
 
   async function scanAll() {
+    
     const found: Game[] = [];
     for (const f of settings.gameFolders) {
-      if (f.platform === "steam") continue;
+      // if (f.platform === "steam") continue;
       const files = await findRomsInFolder(f.path, f.platform);
       for (const file of files) {
         const title = titleFromFilename(file);
@@ -191,6 +205,17 @@ export default function App() {
               ))}
             </ul>
             <b>Game Folders:</b>
+            <ul>
+              {(settings.gameFolders ?? []).map(f => (
+                <li key={f.id}>
+                  <code>{f.name}</code> — {f.platform.toUpperCase()} — {f.path}
+                  <button style={{ marginLeft: 8 }} onClick={() => handleDeleteFolder(f)}>
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+
             <ul>
               {(settings.gameFolders ?? {}).map((f) => (
                 <li key={f.id}>

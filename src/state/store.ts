@@ -23,6 +23,8 @@ type State = {
     args: string[]
   ) => string;
   addGameFolder: (name: string, platform: Platform, path: string, emulatorId?: string) => string;
+  removeGameFolder: (id: string) => void;
+  pruneGamesByFolder: (folderPath: string) => void;
 };
 
 const defaultSettings: Settings = {
@@ -74,7 +76,24 @@ export const useStore = create<State>()(
         set({ settings: { ...s.settings, gameFolders: [...s.settings.gameFolders, folder] } });
         return id;
       },
-    }),
+
+      // inside persist(...) object where other actions live:
+      removeGameFolder: (id) =>
+        set(s => ({
+          settings: {
+            ...s.settings,
+            gameFolders: (s.settings.gameFolders ?? []).filter(f => f.id !== id),
+          },
+        })),
+
+      pruneGamesByFolder: (folderPath) =>
+        set(s => ({
+          games: s.games.filter(
+            g => !(g.romPath && g.romPath.toLowerCase().startsWith(folderPath.toLowerCase()))
+          ),
+        })),
+      }),
+      
     { name: "launcher-local-state" }
   )
 );
