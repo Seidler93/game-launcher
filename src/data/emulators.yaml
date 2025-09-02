@@ -1,0 +1,17 @@
+# Example emulator registry. Update paths for your machine.
+pcsx2:
+  name: "PCSX2"
+  win:
+    exe: "C:\\Emulators\\PCSX2\\pcsx2.exe"
+    args: ["--fullscreen", "${ROM}"]
+  mac:
+  exe: "/Applications/PCSX2.app/Contents/MacOS/PCSX2-Qt"
+  args: ["--fullscreen", "${ROM}"]
+rpcs3:
+  name: "RPCS3"
+  win:
+    exe: "C:\\Emulators\\RPCS3\\rpcs3.exe"
+    args: ["${ROM}"]
+  mac:
+    exe: "/Applications/RPCS3.app/Contents/MacOS/rpcs3"
+    args: ["${ROM}"]

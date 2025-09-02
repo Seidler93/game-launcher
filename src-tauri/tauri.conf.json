@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.tauri.app/config/1",
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "devPath": "http://localhost:5173",
+    "distDir": "../dist"
+  },
+  "package": {
+    "productName": "Game Launcher",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "bundle": {
+      "identifier": "com.primitive.launcher"
+    },
+    "windows": [{ "title": "Game Launcher", "width": 1200, "height": 800 }],
+    "allowlist": {
+      "all": false,
+      "dialog": { "open": true },
+      "fs": { "readFile": true, "readDir": true },
+      "path": { "all": true },
+      "os": { "all": true },
+      "shell": { "open": true }
+    }
+  }
+}
